@@ -42,7 +42,7 @@ public class BorrowingService {
         BookDto book = restClient.getBook(borrowing.getBookId());
         System.out.println("Book found: " + book);
 
-        if (book.isAvailable()) {
+        if (!book.isAvailable()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Book " + book.getId() + " is not available");
         }
 
