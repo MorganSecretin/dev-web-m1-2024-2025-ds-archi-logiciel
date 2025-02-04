@@ -1,6 +1,10 @@
 package ynov.architecture.ds.borrowingservice.service;
 
+import ynov.architecture.ds.borrowingservice.client.RestClient;
+import ynov.architecture.ds.borrowingservice.dto.BookDto;
+import ynov.architecture.ds.borrowingservice.dto.UserDto;
 import ynov.architecture.ds.borrowingservice.entity.Borrowing;
+import ynov.architecture.ds.borrowingservice.kafka.BorrowingKafkaProducer;
 import ynov.architecture.ds.borrowingservice.repository.BorrowingRepository;
 import ynov.architecture.ds.borrowingservice.service.BorrowingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,11 +17,14 @@ import java.util.List;
 
 @Service
 public class BorrowingService {
-
-    // private static final Logger logger = LoggerFactory.getLogger(BorrowingService.class);
-
     @Autowired
     private BorrowingRepository borrowingRepository;
+
+    @Autowired
+    private BorrowingKafkaProducer borrowingKafkaProducer;
+
+    @Autowired
+    private RestClient restClient;
 
     public List<Borrowing> getAllBorrowings() {
         return borrowingRepository.findAll();
@@ -28,7 +35,20 @@ public class BorrowingService {
     }
 
     public Borrowing createBorrowing(Borrowing borrowing) {
-        return this.borrowingRepository.save(borrowing);
+        // Verifier que c'est possible de créer un emprunt
+        UserDto user = restClient.getUser(borrowing.getUserId());
+        System.out.println("User found: " + user);
+
+        BookDto book = restClient.getBook(borrowing.getBookId());
+        System.out.println("Book found: " + book);
+
+        if (book.isAvailable()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Book " + book.getId() + " is not available");
+        }
+
+        Borrowing newBorrowing = this.borrowingRepository.save(borrowing);
+        borrowingKafkaProducer.sendBorrowingCreateEvent(newBorrowing.getBookId(), newBorrowing.getUserId());
+        return null;
     }
 
     public Borrowing updateBorrowing(Long id, Borrowing borrowing) {

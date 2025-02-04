@@ -1,5 +1,9 @@
 package ynov.architecture.ds.userservice.service;
 
+import ynov.architecture.ds.userservice.chainOfResponsability.EmailValidator;
+import ynov.architecture.ds.userservice.chainOfResponsability.MaxBooksValidator;
+import ynov.architecture.ds.userservice.chainOfResponsability.MembershipValidator;
+import ynov.architecture.ds.userservice.chainOfResponsability.UserValidator;
 import ynov.architecture.ds.userservice.entity.User;
 import ynov.architecture.ds.userservice.repository.UserRepository;
 import ynov.architecture.ds.userservice.service.UserService;
@@ -14,7 +18,8 @@ import java.util.List;
 @Service
 public class UserService {
 
-    // private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+    // private static final Logger logger =
+    // LoggerFactory.getLogger(UserService.class);
 
     @Autowired
     private UserRepository userRepository;
@@ -28,7 +33,19 @@ public class UserService {
     }
 
     public User createUser(User user) {
-        return this.userRepository.save(user);
+        try {
+            UserValidator emailValidator = new EmailValidator();
+            UserValidator membershipValidator = new MembershipValidator();
+            UserValidator maxBooksValidator = new MaxBooksValidator();
+            emailValidator.setNextValidator(membershipValidator);
+            membershipValidator.setNextValidator(maxBooksValidator);
+
+            emailValidator.validate(user);
+
+            return this.userRepository.save(user);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 
     public User updateUser(Long id, User user) {
@@ -67,4 +84,23 @@ public class UserService {
             }
         }
     }
+
+    // public void processBorrowingCreated(Long userId) {
+    // User user = userRepository.findById(userId).orElse(null);
+    // if (user == null) {
+    // throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User " + userId + "
+    // not found");
+    // }
+    // this.userRepository.save(user);
+    // }
+
+    // public void processBorrowingEnding(Long userId) {
+    // User user = userRepository.findById(userId).orElse(null);
+    // if (user == null) {
+    // throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User " + userId + "
+    // not found");
+    // }
+
+    // this.userRepository.save(user);
+    // }
 }

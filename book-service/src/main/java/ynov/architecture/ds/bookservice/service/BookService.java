@@ -56,6 +56,24 @@ public class BookService {
         bookRepository.deleteById(id);
     }
 
+    public void processBorrowingCreated(Long bookId) {
+        Book book = bookRepository.findById(bookId).orElse(null);
+        if (book == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Book " + bookId + " not found");
+        }
+        book.setAvailable(false);
+        bookRepository.save(book);
+    }
+
+    public void processBorrowingEnding(Long bookId) {
+        Book book = bookRepository.findById(bookId).orElse(null);
+        if (book == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Book " + bookId + " not found");
+        }
+        book.setAvailable(true);
+        bookRepository.save(book);
+    }
+
     private void copyNonNullProperties(Object source, Object target) {
         if (source == null || target == null) {
             return;
