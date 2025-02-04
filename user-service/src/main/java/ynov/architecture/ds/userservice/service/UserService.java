@@ -5,6 +5,7 @@ import ynov.architecture.ds.userservice.chainOfResponsability.MaxBooksValidator;
 import ynov.architecture.ds.userservice.chainOfResponsability.MembershipValidator;
 import ynov.architecture.ds.userservice.chainOfResponsability.UserValidator;
 import ynov.architecture.ds.userservice.entity.User;
+import ynov.architecture.ds.userservice.kafka.UserKafkaProducer;
 import ynov.architecture.ds.userservice.repository.UserRepository;
 import ynov.architecture.ds.userservice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,9 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UserKafkaProducer userKafkaProducer;
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -65,6 +69,7 @@ public class UserService {
 
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
+        userKafkaProducer.sendUserDeletedEvent(id);
     }
 
     private void copyNonNullProperties(Object source, Object target) {

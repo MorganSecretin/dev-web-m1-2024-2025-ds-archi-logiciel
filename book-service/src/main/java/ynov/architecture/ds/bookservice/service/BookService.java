@@ -54,6 +54,7 @@ public class BookService {
 
     public void deleteBook(Long id) {
         bookRepository.deleteById(id);
+        bookKafkaProducer.sendBookDeletedEvent(id);
     }
 
     public void processBorrowingCreated(Long bookId) {

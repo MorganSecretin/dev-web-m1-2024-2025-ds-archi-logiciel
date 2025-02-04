@@ -87,4 +87,12 @@ public class BorrowingService {
             }
         }
     }
+
+    public void processUserDeleted(Long userId) {
+        borrowingRepository.deleteAllByUserId(userId);
+    }
+
+    public void processBookDeleted(Long bookId) {
+        borrowingRepository.deleteAllByBookId(bookId);
+    }
 }

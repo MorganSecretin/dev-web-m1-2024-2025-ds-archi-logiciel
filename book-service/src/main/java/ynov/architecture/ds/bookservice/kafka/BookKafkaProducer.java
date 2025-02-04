@@ -25,5 +25,11 @@ public class BookKafkaProducer {
         logger.info("Producing book updated event: {}", event);
         kafkaTemplate.send(topic, event);
     }
+
+    public void sendBookDeletedEvent(Long bookId) {
+        String event = String.format("{\"event\":\"BOOK_DELETED\",\"bookId\":\"%s\"}", bookId);
+        logger.info("Producing book deleted event: {}", event);
+        kafkaTemplate.send(topic, event);
+    }
 }
 

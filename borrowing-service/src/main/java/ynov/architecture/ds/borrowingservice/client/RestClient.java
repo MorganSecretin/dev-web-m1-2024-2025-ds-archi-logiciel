@@ -15,7 +15,7 @@ public class RestClient {
     private RestTemplate restTemplate;
 
     private final String SERVICE_USER_URL = "http://localhost:8090/users";
-    private final String SERVICE_BOOK_URL = "http://localhost:8091/books";
+    private final String SERVICE_BOOK_URL = "http://localhost:8090/books";
 
     public UserDto getUser(Long userId) {
         try {

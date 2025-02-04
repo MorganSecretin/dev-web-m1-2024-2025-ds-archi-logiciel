@@ -1,6 +1,21 @@
 server:
   port: 8090
 
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+  swagger-ui.urls:
+    - name: Book Service
+      url: /book-service/v3/api-docs
+    - name: User Service
+      url: /user-service/v3/api-docs
+    - name: Borrowing Service
+      url: /borrowing-service/v3/api-docs
+
 spring:
   application:
     name: api-gateway
@@ -19,6 +34,19 @@ spring:
           uri: lb://borrowing-service
           predicates:
             - Path=/borrowings/**
+        # Ajoute les redirections pour Swagger
+        - id: swagger-book
+          uri: lb://book-service
+          predicates:
+            - Path=/book-service/v3/api-docs
+        - id: swagger-user
+          uri: lb://user-service
+          predicates:
+            - Path=/user-service/v3/api-docs
+        - id: swagger-borrowing
+          uri: lb://borrowing-service
+          predicates:
+            - Path=/borrowing-service/v3/api-docs
 
 eureka:
   client:
