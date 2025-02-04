@@ -1,0 +1,31 @@
+{
+	"folders": [
+		{
+			"path": "api-gateway"
+		},
+		{
+			"path": "book-service"
+		},
+		{
+			"path": "borrowing-service"
+		},
+		{
+			"path": "config-server"
+		},
+		{
+			"path": "discovery-server"
+		},
+		{
+			"path": "files-config-server"
+		},
+		{
+			"path": "user-service"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"java.compile.nullAnalysis.mode": "automatic"
+	}
+}
